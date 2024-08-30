@@ -28,7 +28,7 @@ The dataset spans several years and includes key variables such as `Weekly_Sales
 ## Data Preprocessing
 Data preprocessing steps include:
 1. **Merging Datasets**: The `sales`, `features`, and `stores` datasets were merged on `Store`, `IsHoliday` and `Date` to create a unified dataframe.
-2. **Handling Missing Values**: Missing values were imputed or removed based on the nature of the data.
+2. **Handling Missing Values**: Missing values were imputed.
 
 ## Exploratory Data Analysis (EDA)
 The EDA phase involved:
@@ -46,8 +46,9 @@ Key features created include:
 The project explored several models:
 1. **Linear Regression**: A baseline model to establish a reference performance.
 2. **Random Forest**: A robust tree-based model for capturing non-linear relationships.
-3. **ARIMA + XGBoost Hybrid**: Used ARIMA to model trend and seasonality and XGBoost for residuals.
-4. **LSTM (Long Short-Term Memory)**: A deep learning model to capture complex temporal dependencies.
+3. **ARIMA**: A time-series model used to capture and forecast the temporal dependencies in sales data by considering both past values and errors.
+4. **XGBoost Hybrid**: A powerful boosting algorithm that combines the strengths of multiple weak learners, optimized to handle non-linear patterns and interactions within the sales data.
+5. **LSTM (Long Short-Term Memory)**: A deep learning model to capture complex temporal dependencies.
 
 ## Model Evaluation
 The models were evaluated using the following metrics:
@@ -55,12 +56,12 @@ The models were evaluated using the following metrics:
 - **Mean Absolute Error (MAE)**
 - **R-squared (R²)**
 
-Special attention was given to performance during holiday weeks, as these periods are critical for sales forecasting.
+Special attention was given to performance during holiday weeks, as these periods are critical for sales forecasting. Simulated the sales with and withour markdowns.
 
 ## Installation
 To run this project, follow these steps:
 
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/anithag09/FinalProject.git
    ```
@@ -81,4 +82,4 @@ To use the models for your own data:
 - Train the models and evaluate them using the provided scripts.
 
 ## Conclusion
-The project successfully demonstrated the use of various machine learning models to predict weekly sales. The combination of ARIMA and XGBoost provided a strong performance by effectively capturing both trend and residual components.
+The project successfully demonstrated the use of various machine learning models to predict weekly sales. The model XGBoost provided a strong performance by effectively capturing the residual components.
