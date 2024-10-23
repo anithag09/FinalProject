@@ -34,7 +34,7 @@ with st.sidebar:
         icons=['currency-exchange', 'bar-chart-line'], menu_icon="menu-button"
     )
 
-# Custom CSS for an amazing look
+# Custom CSS 
 st.markdown("""
     <style>
         .main {
@@ -57,12 +57,6 @@ st.markdown("""
         }
     </style>
     """, unsafe_allow_html=True)
-
-def log_transform(x):
-    return np.log1p(x)
-
-def inverse_log_transform(x):
-    return np.expm1(x)
 
 if selected == 'Price Prediction':
     st.title("Sales Forecast")
@@ -104,13 +98,7 @@ if selected == 'Price Prediction':
                                     int(is_holiday_week), int(lagged_holiday_1_week), 
                                     int(lagged_holiday_2_weeks), year,
                                     markdown1, markdown2, markdown3, markdown4, markdown5]])
-
-            # Log transform the predictions
-            prediction_log = loaded_model.predict(input_data)
-
-            # Inverse log transform to get the actual sales prediction
-            prediction = inverse_log_transform(prediction_log)
-            
+            prediction = loaded_model.predict(input_data)
             st.session_state['prediction'] = prediction
             st.session_state['markdowns'] = 'Yes'
             st.success(f"Predicted Weekly Sales: ${prediction[0]:,.2f}")
@@ -145,22 +133,46 @@ if selected == 'Price Prediction':
                                     lagged_sales_4_weeks, lagged_sales_12_weeks, 
                                     int(is_holiday_week), int(lagged_holiday_1_week), 
                                     int(lagged_holiday_2_weeks), year]])
-
-            # Log transform the predictions
-            prediction_no_markdown_log = loaded_model_no_markdown.predict(input_data)
-
-            # Inverse log transform to get the actual sales prediction
-            prediction_no_markdown = inverse_log_transform(prediction_no_markdown_log)
-            
-            st.session_state['prediction'] = prediction_no_markdown
+            prediction_no_markdown = loaded_model_no_markdown.predict(input_data)
+            st.session_state['prediction_no_markdown'] = prediction_no_markdown
             st.session_state['markdowns'] = 'No'
             st.success(f"Predicted Weekly Sales: ${prediction_no_markdown[0]:,.2f}")
 
-if selected == 'Impact Analysis':
-    st.title("Impact Analysis of Markdowns on Weekly Sales")
+elif selected == 'Impact Analysis':
+    # Ensure that prediction values are available
+    if 'prediction' in st.session_state and 'prediction_no_markdown' in st.session_state:
+        prediction = st.session_state['prediction']
+        prediction_no_markdown = st.session_state['prediction_no_markdown']
 
-    if 'prediction' in st.session_state and 'markdowns' in st.session_state:
-        st.write(f"Markdowns Applied: {st.session_state['markdowns']}")
-        st.write(f"Predicted Weekly Sales: ${st.session_state['prediction'][0]:,.2f}")
+        # Calculate markdown effect (assuming they are arrays)
+        markdown_effect = prediction - prediction_no_markdown
+        
+        # Display the markdown effect summary
+        st.subheader("Markdown Effect on Sales:")
+        
+        if isinstance(markdown_effect, (np.ndarray, list)):
+            # Summarize the markdown effect
+            average_effect = np.mean(markdown_effect)
+            st.text(f"Average Markdown Effect on Sales: ${average_effect:,.2f}")
+        else:
+            # If markdown_effect is a single value
+            st.success(f"Markdown Effect: ${markdown_effect:,.2f}")
+
+        # Plot the markdown effect
+        st.subheader("Markdown Effect Visualization")
+        
+        plt.figure()
+        if isinstance(markdown_effect, (np.ndarray, list)):
+            plt.plot(markdown_effect, label='Markdown Effect', color='blue', marker='o')
+            plt.axhline(0, color='black', linewidth=0.5)
+        else:
+            plt.bar(['Markdown Effect'], [markdown_effect], color='blue')
+
+        plt.ylabel('Sales Difference')
+        plt.title('Difference in Sales Due to Markdowns')
+        plt.legend()
+        st.pyplot(plt.gcf())
+
     else:
-        st.write("Please make a prediction first.")
+        st.warning("Please perform a sales prediction first.")
+
